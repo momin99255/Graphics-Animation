@@ -1,0 +1,410 @@
+//#include<windows.h>
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+#include <stdlib.h>
+#include<bits/stdc++.h>
+
+double tx = 0;
+double ty = 0;
+double tz = 0;
+
+
+float degreeX = 0;
+float degreeY = 0;
+float degreeZ = 0;
+float angle = 0;
+
+
+double ex = 0;
+double ey = 0;
+double ez = 5;
+
+/* GLUT callback Handlers */
+
+static void resize(int width, int height)
+{
+    const float ar = (float) width / (float) height;
+  glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-ar, ar, -1.0, 1.0, 2.0, 100.0);
+
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity() ;
+
+}
+
+
+
+// ---------------- CUBE ----------------
+void cube()
+{
+    glBegin(GL_QUADS);
+
+//red front
+    glColor3f(1,0,0);
+    glVertex3f(0.0,1.0,0.0);
+    glVertex3f(1.0,1.0,0.0);
+    glVertex3f(1.0,0.0,0.0);
+    glVertex3f(0.0,0.0,0.0);
+
+    //yellow left
+
+    glColor3f(1,1,0);
+    glVertex3f(0.0,1.0,1.0);
+    glVertex3f(0.0,1.0,0.0);
+    glVertex3f(0.0,0.0,0.0);
+    glVertex3f(0.0,0.0,1.0);
+
+    //blue back
+    glColor3d(0,0,1);
+    glVertex3f(1.0,1.0,1.0);
+    glVertex3f(0.0,1.0,1.0);
+    glVertex3f(0.0,0.0,1.0);
+    glVertex3f(1.0,0.0,1.0);
+
+//green right
+
+    glColor3f(0,1,0);
+    glVertex3f(1.0,1.0,0.0);
+    glVertex3f(1.0,1.0,1.0);
+    glVertex3f(1.0,0.0,1.0);
+    glVertex3f(1.0,0.0,0.0);
+
+
+    //cyan bottom
+
+    glColor3f(1,0,1);
+    glVertex3f(1.0,0.0,1.0);
+    glVertex3f(0.0,0.0,1.0);
+    glVertex3f(0.0,0.0,0.0);
+    glVertex3f(1.0,0.0,0.0);
+
+    //violet top
+
+   glColor3f(0,1,1);
+    glVertex3f(1.0,1.0,0.0);
+    glVertex3f(0.0,1.0,0.0);
+    glVertex3f(0.0,1.0,1.0);
+    glVertex3f(1.0,1.0,1.0);
+    glEnd();
+
+}
+
+
+// ---------------- TABLE ----------------
+void table()
+{
+//Top
+    glPushMatrix();
+    glColor3f(1,.3,.3);
+    glTranslated(-3,-.5,-6);
+    glScalef(6,.5,4);
+    cube();
+    glPopMatrix();
+
+//left corner
+     glPushMatrix();
+    glColor3f(1,.3,.3);
+    glTranslated(-3,-6,-6);
+    glScalef(.5,6,.5);
+    cube();
+    glPopMatrix();
+
+    //right corner
+    glPushMatrix();
+    glColor3f(1,.3,.3);
+    glTranslated(2.5,-6,-6);
+    glScalef(.5,6,.5);
+    cube();
+    glPopMatrix();
+
+
+    //left corner
+     glPushMatrix();
+    glColor3f(1,.3,.3);
+    glTranslated(-3,-6,-3);
+    glScalef(.5,6,.5);
+    cube();
+    glPopMatrix();
+
+    //right corner
+    glPushMatrix();
+    glColor3f(1,.3,.3);
+    glTranslated(2.5,-6,-3);
+    glScalef(.5,6,.5);
+    cube();
+    glPopMatrix();
+
+
+}
+
+// ---------------- CIRCLE ---------------
+//circle bottom
+
+void circle(double r, double g, double b)
+{
+    glColor3f(r,g,b);
+    glBegin(GL_POLYGON);
+
+    for(int i = 0; i<=360; i++)
+    {
+        double theta = 2*3.1416* i/360;
+        glVertex3f(cos(theta), sin(theta), 0);
+
+    }
+    glEnd();
+
+
+//circle top
+
+
+    glColor3f(0,1,0);
+    glBegin(GL_POLYGON);
+
+    for(int i = 0; i<=360; i++)
+    {
+        double theta = 2*3.1416* i/360;
+        glVertex3f(cos(theta), sin(theta), 0.8);
+
+    }
+    glEnd();
+
+    glColor3f(0, 0, 1); // blue
+    glBegin(GL_QUAD_STRIP);
+    for(int i = 0; i <= 360; i++)
+    {
+        double theta  = 2 * 3.1416 * i / 360;
+
+        float x = cos(theta);
+        float y =  sin(theta);
+
+        glVertex3f(x, y, 0);        // bottom
+        glVertex3f(x, y, 0.8);   // top
+    }
+    glEnd();
+
+
+}
+
+
+void wings (GLdouble rot)
+{
+    glPushMatrix();
+   glTranslated(0,0,0);
+    glRotated(rot,0,0,1);
+    glRotatef(angle, 0,0,1);
+
+
+    glScalef(1.8,.3,0.05);
+    cube();
+    glPopMatrix();
+
+}
+
+
+
+void fan()
+{
+    glPushMatrix();
+
+    glTranslated(0,0,-4);
+
+     glPushMatrix();
+    glTranslated(0,0,-0.25);
+     glScalef(0.3,2,0.3);
+     cube();
+     glPopMatrix();
+
+         // fan circle
+    glTranslated(0.1,2,0);
+    glPushMatrix();
+    glTranslated(0,0,-0.3);
+    glScalef(0.5,0.5,0.5);
+    circle(0,0,1);
+    glPopMatrix();
+
+
+    wings(0);
+    wings(120);
+    wings(240);
+
+glPopMatrix();
+
+
+
+}
+
+void spin()
+{
+    angle += 10;
+    if(angle>360)
+        angle -= 360;
+    glutPostRedisplay();
+}
+
+
+void spherical(GLdouble tx, GLdouble ty,GLdouble tz,GLdouble rotan, GLdouble rx, GLdouble ry,GLdouble rz, GLdouble sx, GLdouble sy,GLdouble sz)
+{
+
+       glPushMatrix();
+       //glColor3f(1.0, 0.5, 0.0);
+       glTranslated(tx,ty,tz);
+       glRotated(rotan,rx,ry,rz);
+       glScaled(sx,sy,sz);
+    glutSolidSphere(4.0, 50, 50); //glutSolidSphere(radius, slices, stacks)
+        glPopMatrix();
+
+}
+
+
+void jack()
+{
+
+////3 scaled sphere
+  glColor3f(0.0, 1.0, 0.0);
+    spherical(-12,5,8,90,1,0,0,1,.1,.1);
+    spherical(-12,5,8,90,0,1,0,1,.1,.1);
+    spherical(-12,5,8,90,0,0,1,1,.1,.1);
+
+////6 sphere corner
+       glColor3f(1.0, 0.0, 0.0);
+
+    spherical(-15.5,5,8,0,0,0,0,.2,.2,.2);
+     spherical(-8.5,5,8,0,0,0,0,.2,.2,.2);
+      spherical(-12,5,12,0,0,0,0,.2,.2,.2);
+       spherical(-12,5,3.7,0,0,0,0,.2,.2,.2);
+        spherical(-12,9,8,0,0,0,0,.2,.2,.2);
+         spherical(-12,1,8,0,0,0,0,.2,.2,.2);
+
+}
+
+
+
+void tableelements()
+{
+      //scale(.7,.7,.7);
+
+       table();
+       glPushMatrix();
+ glTranslated(-1.5,0,0);
+        //fan();
+        circle(3,1,1);
+glPopMatrix();
+
+        //glTranslated(25,-1,-10);
+        glScaled(0.3,0.3,0.3);
+       glTranslated(14,13,-18);
+        glRotated(60,1,0,1);
+        //jack();
+        //spherical(-15.5,5,8,0,0,0,0,.2,.2,.2);
+}
+
+
+
+static void display(void)
+{
+       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity() ;
+    gluLookAt(ex, ey, ez, 0, 0, 0, 0, 1, 0); //gluLookAt(ex, ey, ez,centerX, centerY, centerZ, upX, upY, upZ);
+
+
+    glTranslated(0,0,-7);
+
+        glTranslated(-3, -0.5, -6);
+
+       // Step 2: rotate
+      glRotated(degreeX,1,0,0);
+      glRotated(degreeY,0,1,0);
+      glRotated(degreeZ,0,0,1);
+
+       // Step 3: move back
+       glTranslated(3, 0.5, 6);
+
+
+      tableelements();
+
+
+    glutSwapBuffers();
+}
+
+
+static void key(unsigned char key, int x, int y)
+{
+ switch (key)
+    {
+        case 27: exit(0);
+
+        case 'x': degreeX+=5; break;
+        case 'X': degreeX-=5; break;
+
+        case 'y': degreeY+=5; break;
+        case 'Y': degreeY-=5; break;
+
+        case 'z': degreeZ+=5; break;
+        case 'Z': degreeZ-=5; break;
+
+
+
+          case 'c':
+            ex++;
+            break;
+        case 'd':
+            ey++;
+            break;
+        case 'e':
+            ez++;
+            break;
+
+        case 'C':
+            ex--;
+            break;
+        case 'D':
+            ey--;
+            break;
+        case 'E':
+            ez--;
+            break;
+
+    }
+    glutPostRedisplay();
+}
+
+
+
+/* Program entry point */
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(640,480);
+    glutInitWindowPosition(10,10);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+    glutCreateWindow("Table fan");
+
+    glutReshapeFunc(resize);
+    glutDisplayFunc(display);
+    glutKeyboardFunc(key);
+    glutIdleFunc(spin);
+
+    glClearColor(1,1,1,1);
+    glEnable(GL_DEPTH_TEST);
+
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
+}
+
+
+
+
